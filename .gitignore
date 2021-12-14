@@ -1,2 +1,15 @@
+# IJ
+.idea
+.bsp/
+out/
+
+# SBT
+target/
+project/project/
+project/target/
+
+# Scala
 *.class
 *.log
+
+.DS_Store
