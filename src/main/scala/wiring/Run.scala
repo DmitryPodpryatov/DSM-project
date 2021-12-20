@@ -1,25 +1,33 @@
 package wiring
 
+import akka.actor.ActorSystem
+import akka.http.scaladsl.server.Route
 import akka.http.scaladsl.Http
-import cats.effect.Sync
-
-import scala.concurrent.duration._
+import cats.effect.ExitCode
+import monix.eval.Task
 
 object Run {
-  def start[F[_]: Sync](implicit core: Core): F[Unit] = {
-    import core.akkaModule.actorSystem
-    import core.akkaModule.actorSystem.executionContext
+  def start(implicit actorSystem: ActorSystem, core: Core, endpoints: Route): Task[ExitCode] =
+    Task
+      .deferAction { scheduler =>
+        val interface: String = "0.0.0.0"
+        val port: Int = 80
 
-    val interface: String = "0.0.0.0"
-    val port: Int = 8080
+        core.logger.info(f"Starting Akka server at $interface:$port")
+        val bindingTask: Task[Http.ServerBinding] = Task.fromFuture {
+          Http(actorSystem).newServerAt(interface, port).bind(endpoints)
+        }
+        core.logger.info(f"Running Akka server at $interface:$port")
 
-    core.logger.info(f"Running Akka server at $interface: $port")
+        bindingTask.bracket { _ =>
+          Task.never[Unit]
+        } { binding =>
+          core.logger.info("Shutting Akka down")
 
-    Sync[F].delay {
-      Http()
-        .newServerAt(interface, port)
-        .bind(route)
-        .map(_.addToCoordinatedShutdown(hardTerminationDeadline = 10.seconds))
-    }
-  }
+          Task {
+            binding.unbind().onComplete(_ => actorSystem.terminate())(scheduler)
+          }
+        }
+      }
+      .as(ExitCode.Success)
 }

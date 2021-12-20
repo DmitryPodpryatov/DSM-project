@@ -10,7 +10,11 @@ object Dependencies {
       monix.core,
       akka.actor,
       akka.stream,
+      akka.cluster,
       akka.http,
+      akka.json,
+      akka.cors,
+      sttp.akka,
       logging.core,
       logging.logback
     )
@@ -28,7 +32,14 @@ object Dependencies {
   object akka {
     val actor = "com.typesafe.akka" %% "akka-actor-typed" % "2.6.8"
     val stream = "com.typesafe.akka" %% "akka-stream" % "2.6.8"
+    val cluster = "com.typesafe.akka" %% "akka-cluster-typed" % "2.6.8"
     val http = "com.typesafe.akka" %% "akka-http" % "10.2.7"
+    val json = "com.typesafe.akka" %% "akka-http-spray-json" % "10.2.7"
+    val cors = "ch.megard" %% "akka-http-cors" % "1.1.2"
+  }
+
+  object sttp {
+    val akka = "com.softwaremill.sttp.client3" %% "akka-http-backend" % "3.3.18"
   }
 
   object logging {

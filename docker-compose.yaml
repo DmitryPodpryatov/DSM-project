@@ -1,0 +1,44 @@
+version: "3.9"
+
+networks:
+  app_network:
+    external: true
+
+services:
+  peer-1:
+    image: dsm-project/peer:stable
+    networks:
+      - app_network
+    ports:
+      - 8091:80
+    environment:
+      - APP_ENV=docker
+    container_name: peer-1
+
+  peer-2:
+    image: dsm-project/peer:stable
+    networks:
+      - app_network
+    ports:
+      - 8092:80
+    environment:
+      - APP_ENV=docker
+    container_name: peer-2
+
+  peer-3:
+    image: dsm-project/peer:stable
+    networks:
+      - app_network
+    ports:
+      - 8093:80
+    environment:
+      - APP_ENV=docker
+    container_name: peer-3
+
+  sign-service:
+    image: dsm-project/sign-service:stable
+    networks:
+      - app_network
+    ports:
+      - 8082:8082
+    container_name: sign-service

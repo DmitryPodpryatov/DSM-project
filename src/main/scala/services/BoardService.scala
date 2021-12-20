@@ -1,30 +1,30 @@
-package game
+package services
 
-import board.{Board, Cell}
 import cats.Applicative
 import cats.syntax.applicative._
+import models.board.{Board, Cell}
 
 import scala.util.Random
 
-trait Game[F[_]] {
-  def create: F[Board]
+trait BoardService[F[_]] {
+  def createBoard: F[Board]
 }
 
-object Game {
-  final class GameImpl[F[_]: Applicative](random: Random) extends Game[F] {
-    override def create: F[Board] = {
+object BoardService {
+  final class Impl[F[_]: Applicative](random: Random) extends BoardService[F] {
+    override def createBoard: F[Board] = {
       val index: Int = random.nextInt(boardList.length)
 
-      boardList(index).pure[F]
-    }
+      boardList(index)
+    }.pure[F]
 
     lazy val boardList: Vector[Board] = {
       lazy val boardListStrings = Vector(
-        """CPPB
-          |WWPW
-          |WPPW
-          |WPWW
-          |BPPC
+        """SRRRD
+          |DLLLL
+          |RRRRD
+          |DLLLL
+          |RRRRF
           |""".stripMargin
       )
 
@@ -46,9 +46,6 @@ object Game {
       }
   }
 
-  def make[F[_]: Applicative]: GameImpl[F] = {
-    val random = new Random
-
-    new GameImpl[F](random)
-  }
+  def make[F[_]: Applicative](random: Random): Impl[F] =
+    new Impl[F](random)
 }

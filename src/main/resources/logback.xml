@@ -1,24 +1,26 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration>
     <!-- NOTE: this is a debugging configuration.
-    See production config at https://doc.akka.io/docs/akka/current/typed/logging.html -->
+    See production config example at https://doc.akka.io/docs/akka/current/typed/logging.html -->
     <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
         <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
             <level>INFO</level>
         </filter>
         <encoder>
-            <pattern>[%date{ISO8601}] [%level] [%logger] [%marker] [%thread] - %msg MDC: {%mdc}%n</pattern>
+            <pattern>[%date{ISO8601}] [%level] [%logger] - %msg%n</pattern>
         </encoder>
     </appender>
 
     <appender name="FILE" class="ch.qos.logback.core.FileAppender">
         <file>target/dev.log</file>
         <encoder>
-            <pattern>[%date{ISO8601}] [%level] [%logger] [%marker] [%thread] - %msg MDC: {%mdc}%n</pattern>
+            <pattern>[%date{ISO8601}] [%level] [%logger] - %msg%n</pattern>
         </encoder>
     </appender>
 
-    <root level="DEBUG">
+    <logger name="akka.event.slf4j.Slf4jLogger" level="OFF"/>
+
+    <root level="INFO">
         <appender-ref ref="STDOUT"/>
         <appender-ref ref="FILE"/>
     </root>
